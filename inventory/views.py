@@ -12,6 +12,7 @@ from django.utils import timezone
 from django.db.models import Sum,Avg,Q
 from rest_framework import permissions,authentication
 from .permissions import IsSalesPersonOrAdmin
+from .authentication import TokenAuthentication
 
 
 @permission_classes([IsAuthenticated])
@@ -120,6 +121,7 @@ class ChangePasswordView(generics.UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = PasswordChangeSerializer
     permission_classes = [IsAuthenticated]
+    
 
     def get_object(self):
         return self.request.user
@@ -160,7 +162,7 @@ class ChangePasswordView(generics.UpdateAPIView):
 class ProductCreateView(generics.CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer  
-    authentication_classes = [authentication.TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAdminUser,IsAuthenticated]
     
     def perform_create(self, serializer):
@@ -200,6 +202,7 @@ class ProductListView(generics.ListAPIView):
 #         return Response(serializer)
     
 class ProductDetailView(generics.RetrieveAPIView):
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated] 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -231,7 +234,7 @@ class ProductUpdateView(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated] 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    authentication_classes = [authentication.TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAdminUser]
     lookup_field = "pk"
     
@@ -259,7 +262,7 @@ class ProductUpdateView(generics.UpdateAPIView):
 #     )   
 
 class ProductDeleteView(generics.DestroyAPIView):
-    authentication_classes = [authentication.TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     permission_classes = [permissions.IsAdminUser]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -272,7 +275,7 @@ class ProductDeleteView(generics.DestroyAPIView):
 class SalesAnalyticsView(APIView):
     """View for sales analytics"""
     permission_classes = [IsSalesPersonOrAdmin]
-    authentication_classes = [authentication.TokenAuthentication]
+    authentication_classes = [TokenAuthentication]
     
     def get(self, request):
         """Get daily sales analytics by product"""
