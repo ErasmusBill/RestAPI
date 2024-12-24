@@ -162,7 +162,7 @@ class ChangePasswordView(generics.UpdateAPIView):
 class ProductCreateView(generics.CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer  
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication,authentication.SessionAuthentication]
     permission_classes = [permissions.IsAdminUser,IsAuthenticated]
     
     def perform_create(self, serializer):
@@ -183,9 +183,10 @@ class ProductCreateView(generics.CreateAPIView):
 #         return Response(serialer)
         
 class ProductListView(generics.ListAPIView):
-    permission_classes = [IsAuthenticated] 
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated,permissions.IsAdminUser] 
+    
     
     
 #Retriving a particular product
@@ -231,11 +232,11 @@ class ProductDetailView(generics.RetrieveAPIView):
 #             return Response({"error":"An error occured when updating the product, please try again later..."},status=status.HTTP_400_BAD_REQUEST)  
         
 class ProductUpdateView(generics.UpdateAPIView):
-    permission_classes = [IsAuthenticated] 
+    
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     authentication_classes = [TokenAuthentication]
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAdminUser,IsAuthenticated]
     lookup_field = "pk"
     
     def perform_update(self, serializer):
@@ -325,6 +326,63 @@ def search(request):
                 "results": serializer.data
             }, status=status.HTTP_200_OK)
 
+
+#Create category and delete 
+class CategoryListView(generics.ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticated,permissions.IsAdminUser] 
+    
+
+class CategoryDetailView(generics.RetrieveAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated] 
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    
+
+    
+class CategoryCreateView(generics.CreateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer  
+    authentication_classes = [TokenAuthentication,authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+    
+    def perform_create(self, serializer):
+        serializer.save()
+        
+class CategoryDeleteView(generics.DestroyAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    lookup_field = "pk"
+    
+    def perform_destroy(self, instance):
+        super().perform_destroy(instance)  
+        
+class SalesListView(generics.ListAPIView):
+    queryset = Sale.objects.all()
+    serializer_class = SaleSerializer(many=True)
+    permission_classes = [IsAuthenticated,permissions.IsAdminUser]        
+class SalesCreateView(generics.CreateAPIView):
+    queryset = Sale.objects.all()   
+    serializer_class = SaleSerializer   
+    authentication_classes = [TokenAuthentication,authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAdminUser,IsAuthenticated]
+    
+    def perform_create(self, serializer):
+        serializer.save()    
+        
+class SalesDeleteView(generics.DestroyAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+    queryset = Sale.objects.all()
+    serializer_class = SaleSerializer
+    lookup_field = "pk"
+    
+    def perform_destroy(self, instance):
+        super().perform_destroy(instance)              
 
     
 
