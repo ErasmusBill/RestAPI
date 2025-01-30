@@ -12,7 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             "id",
-            "first_name",  #
+            "first_name",  
             "last_name",
             "username",
             "email",
